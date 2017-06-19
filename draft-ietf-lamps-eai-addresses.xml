@@ -1,15 +1,9 @@
-<?xml version="1.0"?>
-<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
-<?rfc toc="yes"?>
-<?rfc compact="yes"?>
-<?rfc subcompact="no"?>
-<?rfc strict="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc linkmailto="no"?>
 <?rfc comments="yes" ?>
 <?rfc inline="yes" ?>
 <rfc category="std" ipr="trust200902"
-   docName='draft-ietf-lamps-eai-addresses-10'>
+   docName='draft-ietf-lamps-eai-addresses-11'>
 <front>
 <title abbrev="I18N Mail Addresses in X.509 certificates">
  Internationalized Email Addresses in X.509 certificates
@@ -50,7 +44,7 @@
 
 <t>
 This document defines a new name form for inclusion in the otherName
-field of an X.509 Subject Alternative Name and Issuer Alternate Name
+field of an X.509 Subject Alternative Name and Issuer Alternative Name
 extension that allows a certificate subject to be associated with an
 Internationalized Email Address.
 </t>
@@ -61,15 +55,12 @@ Internationalized Email Address.
 
 <section title="Introduction">
 
-<t><xref target="RFC5280"/> defines rfc822Name subjectAltName choice for representing
-<xref target="RFC5321"/> email addresses. This form is restricted to a subset of US-ASCII
-characters and thus can't be used to represent Internationalized Email addresses
-<xref target='RFC6531'/>.  To facilitate use of these
-Internationalized Email addresses with X.509 certificates, this document
-specifies a new name form in otherName so that subjectAltName and issuerAltName
-can carry them.  In addition this document calls for all email address domain in X.509 certificates
-to conform to IDNA2008 <xref target='RFC5890'/>.
-</t>
+<t><xref target="RFC5280"/> defines the rfc822Name subjectAltName name type for representing <xref
+target="RFC5321"/> email addresses. The syntax of rfc822Name is restricted to a subset of US-ASCII
+characters and thus can't be used to represent Internationalized Email addresses <xref
+target='RFC6531'/>.  This document calls for a new otherName variant to represent Internationalized
+Email addresses.  In addition this document calls for all email address domains in X.509
+certificates to conform to IDNA2008 <xref target='RFC5890'/>.</t>
 
 </section>
 
@@ -86,7 +77,7 @@ Backus-Naur Form (ABNF)</xref> notation.</t>
 <section title="Name Definitions" anchor="sec_name_def">
 
 <t> The GeneralName structure is defined in <xref target="RFC5280"/>, and supports many different
-names forms including otherName for extensibility.  This section specifies the SmtpUTF8Name name
+name forms including otherName for extensibility.  This section specifies the SmtpUTF8Name name
 form of otherName, so that Internationalized Email addresses can appear in the subjectAltName of a
 certificate, the issuerAltName of a certificate, or anywhere else that GeneralName is used. </t>
 
@@ -94,128 +85,131 @@ certificate, the issuerAltName of a certificate, or anywhere else that GeneralNa
 
 <t>SmtpUTF8Name ::= UTF8String (SIZE (1..MAX))</t>
 
-<t> When the subjectAltName (or issuerAltName) extension contains an Internationalized Email
-address, the address MUST be stored in the SmtpUTF8Name name form of otherName.  The format of
-SmtpUTF8Name is defined as the ABNF rule SmtpUTF8Mailbox. SmtpUTF8Mailbox is a modified version of
-the Internationalized Mailbox which was defined in Section 3.3 of <xref target='RFC6531'/> which was
-itself derived from SMTP Mailbox from Section 4.1.2 of <xref target='RFC5321'/>. <xref
-target='RFC6531'/> defines the following ABNF rules for Mailbox whose parts are modified for
-internationalization: &lt;Local-part&gt;, &lt;Dot-string&gt;, &lt;Quoted-string&gt;,
-&lt;QcontentSMTP&gt;, &lt;Domain&gt;, and &lt;Atom&gt;.  In particular, &lt;Local-part&gt; was
-updated to also support UTF8-non-ascii.  UTF8-non-ascii was described by Section 3.1 of <xref
-target='RFC6532'/>.  Also, sub-domain was extended to support U-label, as defined in <xref
-target='RFC5890'/>.
-</t>
+<t> When the subjectAltName (or issuerAltName) extension contains an Internationalized Email address
+with a non-ASCII local-part, the address MUST be stored in the SmtpUTF8Name name form of otherName.
+The format of SmtpUTF8Name is defined as the ABNF rule SmtpUTF8Mailbox. SmtpUTF8Mailbox is a
+modified version of the Internationalized Mailbox which was defined in Section 3.3 of <xref
+target='RFC6531'/> which was itself derived from SMTP Mailbox from Section 4.1.2 of <xref
+target='RFC5321'/>. <xref target='RFC6531'/> defines the following ABNF rules for Mailbox whose
+parts are modified for internationalization: &lt;Local-part&gt;, &lt;Dot-string&gt;, &lt;Quoted-
+string&gt;, &lt;QcontentSMTP&gt;, &lt;Domain&gt;, and &lt;Atom&gt;.  In particular, &lt;Local-
+part&gt; was updated to also support UTF8-non-ascii.  UTF8-non-ascii was described by Section 3.1 of
+<xref target='RFC6532'/>.  Also, domain was extended to support U-label, as defined in <xref
+target='RFC5890'/>. </t>
 
 <t> This document further refines Internationalized <xref target='RFC6531'/> Mailbox ABNF rules and
-calls this SmtpUTF8Mailbox.  In SmtpUTF8Mailbox, sub-domain that encode non-ASCII characters SHALL
-use U-label Unicode native character labels and MUST NOT use A-label <xref target='RFC5890'/>.  This
-restriction prevents having to determine which label encoding A- or U-label is present in the
-Domain.  As per Section 2.3.2.1 of <xref target='RFC5890'/>, U-label use UTF-8 <xref
-target='RFC3629'/> with Normalization Form C and other properties specified there.  In
-SmtpUTF8Mailbox, sub-domain that encode ASCII character labels SHALL use NR-LDH restrictions as
-specified by section 2.3.1 of <xref target='RFC5890'/> and SHALL be restricted to lower case
-letters. One suggested approach to apply these sub-domains restriction is to restrict sub-domain so
-that labels not start with two letters followed by two hyphen-minus characters. Consistent with the
-treatment of rfc822Name in <xref target='RFC5280'/>, SmtpUTF8Name is an envelope &lt;Mailbox&gt; and
-has no phrase (such as a common name) before it, has no comment (text surrounded in parentheses)
-after it, and is not surrounded by "&lt;" and "&gt;". </t>
+calls this SmtpUTF8Mailbox.  In SmtpUTF8Mailbox, labels that include non-ASCII characters MUST be
+stored in U-label (rather than A-label) <xref target='RFC5890'/> form.  This restriction removes the
+need to determine which label encoding A- or U-label is present in the Domain.  As per Section
+2.3.2.1 of <xref target='RFC5890'/>, U-label are encoded as UTF-8 <xref target='RFC3629'/> in
+Normalization Form C and other properties specified there.  In SmtpUTF8Mailbox, domain labels that
+solely use ASCII characters (meaning not A- nor U-labels) SHALL use NR-LDH restrictions as specified
+by section 2.3.1 of <xref target='RFC5890'/> and SHALL be restricted to lower case letters.  NR-LDH
+stands for "Non-Reserved Letters Digits Hyphen" and is the set LDH labels that do not have "--"
+characters in the third and forth character position, which excludes "tagged domain names" such as
+A-labels.  Consistent with the treatment of rfc822Name in <xref target='RFC5280'/>, SmtpUTF8Name is
+an envelope &lt;Mailbox&gt; and has no phrase (such as a common name) before it, has no comment
+(text surrounded in parentheses) after it, and is not surrounded by "&lt;" and "&gt;". </t>
 
-<t> Due to operational reasons described shortly and name constraint compatibility reasons described
-in its section, SmtpUTF8Name subjectAltName MUST only be used when the local part of the email address
-contains UTF-8.  When the local-part is ASCII, rfc822Name subjectAltName MUST be used instead of
-SmtpUTF8Name.  The use of rfc822Name rather than SmtpUTF8Name is currently more likely to be
-supported.  Also use of SmtpUTF8Name incurs higher byte representation overhead due to encoding with
-otherName and the additional OID needed.  This may be offset if domain requires non-ASCII characters
-as SmtpUTF8Name supports U-label whereas rfc822Name supports A-label. </t>
+<t> Due to operational reasons to be described shortly and name constraint compatibility reasons
+described in <xref target="sec_constraint" />, SmtpUTF8Name subjectAltName MUST only be used when
+the local part of the email address contains contains non-ASCII characters.  When the local-part is
+ASCII, rfc822Name subjectAltName MUST be used instead of SmtpUTF8Name.  This is compatible with
+legacy software that supports only rfc822Name (and not SmtpUTF8Name).</t>
 
 <t> SmtpUTF8Name is encoded as UTF8String.  The UTF8String encoding MUST NOT contain a Byte-Order-
 Mark (BOM) <xref target='RFC3629'/> to aid consistency across implementations particularly for
 comparison. </t> </section>
 
 <section title="IDNA2008" anchor="sec_idna"> <t> To facilitate comparison between email addresses,
-all email address domain in X.509 certificates MUST conform to IDNA2008 <xref target='RFC5890'/>
-(and excludes any "mappings" mentioned in that document).  Otherwise non-conforming email address
+all email address domains in X.509 certificates MUST conform to IDNA2008 <xref target='RFC5890'/>
+(and avoids any "mappings" mentioned in that document).  Use of non-conforming email address
 domains introduces the possibility of conversion errors between alternate forms.  This applies to
-SmtpUTF8Mailbox and rfc822Name in subjectAltName, issuerAltName and anywhere else that GeneralName
-is used. </t> </section>
+SmtpUTF8Name and rfc822Name in subjectAltName, issuerAltName and anywhere else that these
+are used. </t> </section>
 
 <section title='Matching of Internationalized Email Addresses in X.509 certificates'
 anchor="sec_match">
 
-<t>In equivalence comparison with SmtpUTF8Name, there may be some setup work to enable the
-comparison i.e. processing of the SmtpUTF8Name content or the email address that is being compared
-against. The process for setup for comparing with SmtpUTF8Name is split into domain steps and local-
-part steps.  The comparison form for local-part always is UTF-8. The comparison form for domain
-depends on context. While some contexts such as certificate path validation in <xref
-target='RFC5280'/> specify transforming domain to A-label, this document RECOMMENDS transforming to
-UTF-8 U-label instead.  This reduces the likelihood of errors by reducing conversions as more
-implementations natively support U-label domains. </t>
+<t>In equivalence comparison with SmtpUTF8Name, there may be some setup work on one or both inputs
+depending of whether the input is already in comparison form.  Comparing SmtpUTF8Names consists of a
+domain part step and a local-part step.  The comparison form for local-parts always is UTF-8. The
+comparison form for domain parts depends on context.  While some contexts such as certificate path
+validation in <xref target='RFC5280'/> specify transforming domain to A-label (section 7.5 and 7.2
+in <xref target='RFC5280'/>), this document RECOMMENDS transforming to UTF-8 U-label instead.  This
+reduces the likelihood of errors by reducing conversions as more implementations natively support U-
+label domains. </t>
 
 <t> Comparison of two SmtpUTF8Name is straightforward with no setup work needed.  They are
-considered equivalent if there is an exact octet-for-octet match.  Comparison with other email
-address forms such as Internationalized email address or rfc822Name requires additional setup steps.
-Domain setup is particularly important for forms that may contain A- or U-label such as
-International email address, or A-label only forms such as rfc822Name.  This document specifies the
-process to transform the domain to U-label.  (To convert the domain to A-label, follow the process
-specified in section 7.5 and 7.2 in <xref target='RFC5280'/>) The first step is to detect A-label by
-using section 5.1 of <xref target='RFC5891'/>. Next if necessary, transform the A-label to U-label
-Unicode as specified in section 5.2 of <xref target='RFC5891'/>.  Finally if necessary convert the
-Unicode to UTF-8 as specified in section 3 of <xref target='RFC3629'/>.  For ASCII NR-LDH labels,
-upper case letters are converted to lower case letters.  In setup for SmtpUTF8Mailbox, the email
-address local-part MUST conform to the requirements of <xref target='RFC6530'/> and <xref
-target='RFC6531'/>, including being a string in UTF-8 form.  In particular, the local-part
-MUST NOT be transformed in any way, such as by doing case folding or normalization of any kind.  The
+considered equivalent if there is an exact octet-for-octet match.  Comparison with email addresses
+such as Internationalized email address or rfc822Name requires additional setup steps for domain
+part and local-part.  The initial preparation for the email addresses is to remove any phrases or
+comments, as well as "&lt;" and "&gt;" present.  This document calls for comparison of domain
+labels that include non-ASCII characters be tranformed to U-label if not already in that form.  The
+first step is to detect use of the A-label by using section 5.1 of <xref target='RFC5891'/>.  Next
+if necessary, transform any A-labels to U-labels Unicode as specified in section 5.2 of <xref
+target='RFC5891'/>.  Finally if necessary convert the Unicode to UTF-8 as specified in section 3 of
+<xref target='RFC3629'/>.  For ASCII NR-LDH labels, upper case letters are converted to lower case
+letters.  In setup for SmtpUTF8Mailbox, the email address local-part MUST conform to the
+requirements of <xref target='RFC6530'/> and <xref target='RFC6531'/>, including being a string in
+UTF-8 form.  In particular, the local-part MUST NOT be transformed in any way, such as by doing case
+folding or normalization of any kind.
+
+
+  The
 &lt;Local-part&gt; part of an Internationalized email address is already in UTF-8.  For rfc822Name
 the local-part, which is IA5String (ASCII), trivially maps to UTF-8 without change.  Once setup is
 complete, they are again compared octet-for-octet. </t>
 
 <t> To summarize non-normatively, the comparison steps including setup are:
   <list style="numbers">
-    <t>If the domain contains A-labels, transform them to U-label.</t>
+    <t>If the domain contains A-labels, transform them to U-labels.</t>
     <t>If the domain contains ASCII NR-LDH labels, lowercase them.</t>
-    <t>Ensure local-part is UTF-8.</t>
     <t>Compare strings octet-for-octet for equivalence.</t>
   </list>
 </t>
 
-<t> This specification expressly does not define any wildcards characters and SmtpUTF8Name
+<t> This specification expressly does not define any wildcard characters and SmtpUTF8Name
 comparison implementations MUST NOT interpret any character as wildcards.  Instead, to specify
-multiple email addresses through SmtpUTF8Name, the certificate SHOULD use multiple subjectAltNames
-or issuerAltNames to explicitly carry those email addresses. </t>
+multiple email addresses through SmtpUTF8Name, the certificate MUST use multiple subjectAltNames
+or issuerAltNames to explicitly carry any additional email addresses. </t>
 
 </section>
 
 <section title='Name constraints in path validation' anchor="sec_constraint">
 
-<t> This section updates <xref target='RFC5280'/> name constraints defined in section 4.2.1.10 to
-work with SmtpUTF8Name subjectAltName.  The following specifies that a SmtpUTF8Name aware CA use a
-compatible name constraint representation.  Similarly a SmtpUTF8Name aware path validators MUST be
-able to apply name constraint comparison to the subject distinguished name and both forms of subject
+<t> This section updates section 4.2.1.10 of <xref target='RFC5280'/> to extend rfc822Name
+name constraints to SmtpUTF8Name subjectAltNames.  A SmtpUTF8Name aware path validators will
+apply name constraint comparison to the subject distinguished name and both forms of subject
 alternative name rfc822Name and SmtpUTF8Name.  </t>
 
-<t> The SmtpUTF8Name aware email address name constraint form is specified to be rfc822Name
-motivated by compatibility considerations with legacy systems that already understand that form.
-This specification modifies <xref target='RFC5280'/> name constraint to only require with MAY that
-it represents all addresses at a host or all mailboxes in a domain, and require with MAY NOT that it
-represent a particular mailbox.  For context, <xref target='RFC5280'/> Section 4.2.1.10 specifies
-with MAY that name constraint represent a particular mailbox, all addresses at a host, or all
-mailboxes in a domain by specifying the complete email address, a host name, or a domain.  The
-change is due to rfc822Name name constraints inability to represent a specific mailbox with a UTF-8
-email local part email address.  CA certificate issuers should be aware of this lessened support.
-</t>
+<t> Both rfc822Name and SmtpUTF8Name subject alternative names represent the same underlying email
+address namespace.  Since legacy CAs constrained to issue certificates for a specific set of domains
+would lack corresponding UTF-8 constraints, this specification modifies and extends rfc822Name name
+SmtpUTF8Name does not violate existing name constraints.  Since it is not valid to include non-ASCII
+UTF-8 characters in the local-part of rfc822Name name constraints, and since name constraints that
+include a local-part are rarely, if at all, used in practice, this specification modifies  <xref
+target='RFC5280'/> name constraints to only admit the forms represent all addresses at a host or all
+mailboxes in a domain, and deprecates rfc822Name name constraints that represent a particular
+mailbox.  That is, rfc822Name constraints with a local-part SHOULD NOT be used. </t>
 
 <t> Constraint comparison with SmtpUTF8Name subjectAltName starts with the setup steps defined by
-<xref target="sec_match"/>.  The setup applies to the inputs of the comparison which is one of a
-subject distinguished name or a rfc822Name or SmtpUTF8Name subjectAltName, and one of a rfc822Name
-name constraint.  Non-normatively the setup will convert any domain A-label to U-label in the
-rfc822Name name constraint, and to lower case any doman NR-LDH label in both the name constraint and
-the subject.  After setup, this follows the comparison steps defined in 4.2.1.10 of <xref
-target='RFC5280'/> with some modifications as follows.  The comparison process starts by determining
-the name constraint representation i.e. email host name or domain part, then comparing the name
-constraint against the corresponding part in the email address using a byte for byte comparison.
-This document suggests that name constraint comparison with subject distinguished name or rfc822Name
-subjectAltName also follow these setup and comparisons steps as well. </t>
+<xref target="sec_match"/>.  Setup converts the inputs of the comparison which is one of a subject
+distinguished name or a rfc822Name or SmtpUTF8Name subjectAltName, and one of a rfc822Name name
+constraint, to constraint comparison form.  For rfc822Name name constraint, this will convert any
+domain A-labels to U-labels.  For both the name constraint and the subject, this will lower case any
+domain NR-LDH labels.  Strip the local-part and "@" separator from each rfc822Name and SmtpUTF8Name,
+leaving just the domain-part.  After setup, this follows the comparison steps defined in 4.2.1.10 of
+<xref target='RFC5280'/> as follows.  If the resulting name constraint domain starts with a "."
+character, then for the name constraint to match, a suffix of the resulting subject alternative name
+domain MUST match the name constraint (including the leading ".") octet for octet.  If the resulting
+name constraint domain does not start with a "." character, then for the name constraint to match,
+the entire resulting subject alternative name domain MUST match the name constraint octet for octet.
+</t>
+
+<t> Certificate Authorities that wish to issue CA certificates with email address name constraint
+MUST use rfc822Name subject alternative names only.  These MUST be IDNA2008 conformant names with no
+mappings, and with non-ASCII domains encoded in A-labels only. </t>
 
 <t> The name constraint requirement with SmtpUTF8Name subject alternative name is illustrated in the
 non-normative diagram <xref target="example_permitted_matched_constraint" />.   The first example
@@ -223,6 +217,8 @@ non-normative diagram <xref target="example_permitted_matched_constraint" />.   
 valid rfc822Name subjectAltName and SmtpUTF8Name subjectAltName email addresses.  The second
 example (2) illustrates a permitted rfc822Name hostname name constraint with A-label, and the
 corresponding valid rfc822Name subjectAltName and SmtpUTF8Name subjectAltName email addresses.
+Note that an email address with ASCII only local-part is encoded as rfc822Name despite also
+having unicode present in the domain.
 
 
 <!-- u+8001u+5E2B is 老師 teacher; u+4E0Du+5C0D is 不對 wrong;  u+5B66u+751F 学生 student; -->
@@ -267,13 +263,13 @@ corresponding valid rfc822Name subjectAltName and SmtpUTF8Name subjectAltName em
 
 <section title="Security Considerations" anchor="seccons">
 
-<t> Use for SmtpUTF8Name for certificate subjectAltName (and issuerAltName) will incur many of the
-same security considerations of Section 8 in <xref target='RFC5280'/> but is further complicated by
-permitting non-ASCII characters in the email address local-part. This complication, as mentioned in
-Section 4.4 of <xref target='RFC5890'/> and in Section 4 of <xref target='RFC6532'/>, is that use of
-Unicode introduces the risk of visually similar and identical characters which can be exploited to
-deceive the recipient. The former document references some means to mitigate against these attacks.
-</t>
+<t> Use of SmtpUTF8Name for certificate subjectAltName (and issuerAltName) will incur many of the
+same security considerations as in Section 8 in <xref target='RFC5280'/> , but introduces a new
+issue by permitting non-ASCII characters in the email address local-part. This issue,
+as mentioned in Section 4.4 of <xref target='RFC5890'/> and in Section 4 of <xref
+target='RFC6532'/>, is that use of Unicode introduces the risk of visually similar and identical
+characters which can be exploited to deceive the recipient. The former document references some
+means to mitigate against these attacks. </t>
 
 </section>
 
@@ -396,3 +392,4 @@ and his helpful feedback, and to Viktor Dukhovni for his help with name constrai
 </section>
 </back>
 </rfc>
+
