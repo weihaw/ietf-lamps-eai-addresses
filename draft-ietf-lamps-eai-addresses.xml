@@ -1,9 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<?rfc strict="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc linkmailto="no"?>
 <?rfc comments="yes" ?>
 <?rfc inline="yes" ?>
 <rfc category="std" ipr="trust200902"
-   docName='draft-ietf-lamps-eai-addresses-11'>
+   docName='draft-ietf-lamps-eai-addresses-12'>
 <front>
 <title abbrev="I18N Mail Addresses in X.509 certificates">
  Internationalized Email Addresses in X.509 certificates
@@ -104,7 +110,7 @@ need to determine which label encoding A- or U-label is present in the Domain.  
 2.3.2.1 of <xref target='RFC5890'/>, U-label are encoded as UTF-8 <xref target='RFC3629'/> in
 Normalization Form C and other properties specified there.  In SmtpUTF8Mailbox, domain labels that
 solely use ASCII characters (meaning not A- nor U-labels) SHALL use NR-LDH restrictions as specified
-by section 2.3.1 of <xref target='RFC5890'/> and SHALL be restricted to lower case letters.  NR-LDH
+by Section 2.3.1 of <xref target='RFC5890'/> and SHALL be restricted to lower case letters.  NR-LDH
 stands for "Non-Reserved Letters Digits Hyphen" and is the set LDH labels that do not have "--"
 characters in the third and forth character position, which excludes "tagged domain names" such as
 A-labels.  Consistent with the treatment of rfc822Name in <xref target='RFC5280'/>, SmtpUTF8Name is
@@ -135,8 +141,9 @@ anchor="sec_match">
 depending of whether the input is already in comparison form.  Comparing SmtpUTF8Names consists of a
 domain part step and a local-part step.  The comparison form for local-parts always is UTF-8. The
 comparison form for domain parts depends on context.  While some contexts such as certificate path
-validation in <xref target='RFC5280'/> specify transforming domain to A-label (section 7.5 and 7.2
-in <xref target='RFC5280'/>), this document RECOMMENDS transforming to UTF-8 U-label instead.  This
+validation in <xref target='RFC5280'/> specify transforming domain to A-label (Section 7.5 and 7.2
+in <xref target='RFC5280'/> as updated by <xref target='ID-lamps-rfc5280-i18n-update'/>),
+this document RECOMMENDS transforming to UTF-8 U-label instead.  This
 reduces the likelihood of errors by reducing conversions as more implementations natively support U-
 label domains. </t>
 
@@ -144,22 +151,18 @@ label domains. </t>
 considered equivalent if there is an exact octet-for-octet match.  Comparison with email addresses
 such as Internationalized email address or rfc822Name requires additional setup steps for domain
 part and local-part.  The initial preparation for the email addresses is to remove any phrases or
-comments, as well as "&lt;" and "&gt;" present.  This document calls for comparison of domain
-labels that include non-ASCII characters be tranformed to U-label if not already in that form.  The
-first step is to detect use of the A-label by using section 5.1 of <xref target='RFC5891'/>.  Next
-if necessary, transform any A-labels to U-labels Unicode as specified in section 5.2 of <xref
-target='RFC5891'/>.  Finally if necessary convert the Unicode to UTF-8 as specified in section 3 of
+comments, as well as "&lt;" and "&gt;" present.  This document calls for comparison of domain labels
+that include non-ASCII characters be tranformed to U-label if not already in that form.  The first
+step is to detect use of the A-label by using Section 5.1 of <xref target='RFC5891'/>.  Next if
+necessary, transform any A-labels to U-labels Unicode as specified in Section 5.2 of <xref
+target='RFC5891'/>.  Finally if necessary convert the Unicode to UTF-8 as specified in Section 3 of
 <xref target='RFC3629'/>.  For ASCII NR-LDH labels, upper case letters are converted to lower case
 letters.  In setup for SmtpUTF8Mailbox, the email address local-part MUST conform to the
 requirements of <xref target='RFC6530'/> and <xref target='RFC6531'/>, including being a string in
 UTF-8 form.  In particular, the local-part MUST NOT be transformed in any way, such as by doing case
-folding or normalization of any kind.
-
-
-  The
-&lt;Local-part&gt; part of an Internationalized email address is already in UTF-8.  For rfc822Name
-the local-part, which is IA5String (ASCII), trivially maps to UTF-8 without change.  Once setup is
-complete, they are again compared octet-for-octet. </t>
+folding or normalization of any kind.  The &lt;Local-part&gt; part of an Internationalized email
+address is already in UTF-8.  For rfc822Name the local-part, which is IA5String (ASCII), trivially
+maps to UTF-8 without change.  Once setup is complete, they are again compared octet-for-octet. </t>
 
 <t> To summarize non-normatively, the comparison steps including setup are:
   <list style="numbers">
@@ -178,19 +181,21 @@ or issuerAltNames to explicitly carry any additional email addresses. </t>
 
 <section title='Name constraints in path validation' anchor="sec_constraint">
 
-<t> This section updates section 4.2.1.10 of <xref target='RFC5280'/> to extend rfc822Name
+<t> This section updates Section 4.2.1.10 of <xref target='RFC5280'/> to extend rfc822Name
 name constraints to SmtpUTF8Name subjectAltNames.  A SmtpUTF8Name aware path validators will
 apply name constraint comparison to the subject distinguished name and both forms of subject
 alternative name rfc822Name and SmtpUTF8Name.  </t>
 
 <t> Both rfc822Name and SmtpUTF8Name subject alternative names represent the same underlying email
 address namespace.  Since legacy CAs constrained to issue certificates for a specific set of domains
-would lack corresponding UTF-8 constraints, this specification modifies and extends rfc822Name name
-SmtpUTF8Name does not violate existing name constraints.  Since it is not valid to include non-ASCII
-UTF-8 characters in the local-part of rfc822Name name constraints, and since name constraints that
-include a local-part are rarely, if at all, used in practice, this specification modifies  <xref
-target='RFC5280'/> name constraints to only admit the forms represent all addresses at a host or all
-mailboxes in a domain, and deprecates rfc822Name name constraints that represent a particular
+would lack corresponding UTF-8 constraints, <xref target='ID-lamps-rfc5280-i18n-update'/>
+updates modifies and extends rfc822Name name constraints defined in <xref target='RFC5280'/> to
+cover SmtpUTF8Name subject alternative names.  This ensures that the introduction of SmtpUTF8Name
+does not violate existing name constraints.  Since it is not valid to include non-ASCII UTF-8
+characters in the local-part of rfc822Name name constraints, and since name constraints that include
+a local-part are rarely, if at all, used in practice, name constraints updated in <xref
+target='ID-lamps-rfc5280-i18n-update'/> admit the forms that represent all addresses at a host
+or all mailboxes in a domain, and deprecates rfc822Name name constraints that represent a particular
 mailbox.  That is, rfc822Name constraints with a local-part SHOULD NOT be used. </t>
 
 <t> Constraint comparison with SmtpUTF8Name subjectAltName starts with the setup steps defined by
@@ -275,7 +280,7 @@ means to mitigate against these attacks. </t>
 
 <section title="IANA Considerations" anchor="sec_iana">
 
-<t> in Section <xref target='sec_name_def'/> and the ASN.1 module identifier defined in Section
+<t>In <xref target='sec_name_def'/> and the ASN.1 module identifier defined in
 <xref target='appndix_asn1'/>. IANA is kindly requested to make the following assignments for:
   <list style="symbol">
   <t>The LAMPS-EaiAddresses-2016 ASN.1 module in the "SMI Security for PKIX Module Identifier"
@@ -300,7 +305,16 @@ means to mitigate against these attacks. </t>
 <?rfc include="reference.RFC.6530"?> <!-- Overview and Framework for Internationalized Email -->
 <?rfc include="reference.RFC.6531"?> <!-- SMTP Extension for Internationalized Email -->
 <?rfc include="reference.RFC.6532"?> <!-- Internationalized Email Headers-->
-
+<reference anchor="ID-lamps-rfc5280-i18n-update"
+           target="https://datatracker.ietf.org/doc/draft-housley-rfc5280-i18n-update/">
+    <front>
+        <title>Internationalization Updates to RFC 5280</title>
+        <author initials="R." surname="Housley" fullname="Russ Housley">
+            <organization/>
+        </author>
+        <date month="June" year="2017" />
+    </front>
+</reference>
 </references>
 <references title="Informative References">
 
@@ -314,7 +328,7 @@ This specification uses the ASN.1 definitions from
 <xref target='RFC5912'/> with the 2002 ASN.1 notation used in that document.
 <xref target='RFC5912'/> updates normative documents using older ASN.1 notation.</t>
 
-<figure anchor="asn1_module">
+<figure>
 <artwork>
   LAMPS-EaiAddresses-2016
     { iso(1) identified-organization(3) dod(6)
@@ -392,4 +406,5 @@ and his helpful feedback, and to Viktor Dukhovni for his help with name constrai
 </section>
 </back>
 </rfc>
+
 
